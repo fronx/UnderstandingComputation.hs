@@ -1,6 +1,5 @@
 {-# LANGUAGE
       MultiParamTypeClasses,
-      FlexibleInstances,
       FunctionalDependencies #-}
 
 module Simple where
