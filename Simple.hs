@@ -18,8 +18,8 @@ class Expr a b | a -> b where
 
 instance Expr IntExpr Int where
   native (Number x)     = x
-  native (Add      x y) = (native(x) + native(y))
-  native (Multiply x y) = (native(x) * native(y))
+  native (Add      x y) = native(x) + native(y)
+  native (Multiply x y) = native(x) * native(y)
   eval  = box . native
   box x = Number x
 
