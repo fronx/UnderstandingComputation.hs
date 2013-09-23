@@ -12,13 +12,19 @@ data BoolExpr = Boolean  Bool
               | LessThan IntExpr IntExpr
 
 class Expr a b | a -> b where
-  eval :: a -> b
+  eval   :: a -> a
+  native :: a -> b
+  box    :: b -> a
 
 instance Expr IntExpr Int where
-  eval (Number x)     = x
-  eval (Add      x y) = eval(x) + eval(y)
-  eval (Multiply x y) = eval(x) * eval(y)
+  native (Number x)     = x
+  native (Add      x y) = (native(x) + native(y))
+  native (Multiply x y) = (native(x) * native(y))
+  eval  = box . native
+  box x = Number x
 
 instance Expr BoolExpr Bool where
-  eval (Boolean x)    = x
-  eval (LessThan a b) = eval(a) < eval(b)
+  native (Boolean x)    = x
+  native (LessThan a b) = native(a) < native(b)
+  eval  = box . native
+  box x = Boolean x
