@@ -9,22 +9,23 @@ data IntExpr = Number   Int
 data BoolExpr = Boolean  Bool
               | LessThan IntExpr IntExpr
 
+type family Native a
+type instance Native IntExpr  = Int
+type instance Native BoolExpr = Bool
+
 class Expr a where
-  type Native a
   native :: a -> Native a
   box    :: Native a -> a
   eval   :: a -> a
   eval = box . native
 
 instance Expr IntExpr where
-  type Native IntExpr = Int
   native (Number x)     = x
   native (Add      x y) = native(x) + native(y)
   native (Multiply x y) = native(x) * native(y)
   box x = Number x
 
 instance Expr BoolExpr where
-  type Native BoolExpr = Bool
   native (Boolean x)    = x
   native (LessThan a b) = native(a) < native(b)
   box x = Boolean x
