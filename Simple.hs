@@ -21,10 +21,9 @@ native (Boolean  x  ) = x
 native (LessThan x y) = native(x) < native(y)
 
 class Eval a where
+  box :: a -> Expr a
   eval :: Expr a -> Expr a
+  eval = box . native
 
-instance Eval Int where
-  eval x = Number $ native x
-
-instance Eval Bool where
-  eval x = Boolean $ native x
+instance Eval Int  where box = Number
+instance Eval Bool where box = Boolean
