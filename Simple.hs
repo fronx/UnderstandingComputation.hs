@@ -1,31 +1,30 @@
-{-# LANGUAGE TypeFamilies #-}
-
+{-# LANGUAGE GADTs, FlexibleInstances #-}
 module Simple where
 
-data IntExpr = Number   Int
-             | Add      IntExpr IntExpr
-             | Multiply IntExpr IntExpr
+data Expr a where
+  Number   :: Int  -> Expr Int
+  Boolean  :: Bool -> Expr Bool
+  Add      :: Expr Int -> Expr Int -> Expr Int
+  Multiply :: Expr Int -> Expr Int -> Expr Int
+  LessThan :: Expr Int -> Expr Int -> Expr Bool
 
-data BoolExpr = Boolean  Bool
-              | LessThan IntExpr IntExpr
+instance Show (Expr Bool) where
+  show (Boolean b) = "Expr[ Boolean " ++ show b ++ " ]"
+instance Show (Expr Int) where
+  show (Number i) = "Expr[ Number " ++ show i ++ " ]"
 
-type family Native a
-type instance Native IntExpr  = Int
-type instance Native BoolExpr = Bool
+native :: Expr a -> a
+native (Number   x  ) = x
+native (Add      x y) = native(x) + native(y)
+native (Multiply x y) = native(x) * native(y)
+native (Boolean  x  ) = x
+native (LessThan x y) = native(x) < native(y)
 
-class Expr a where
-  native :: a -> Native a
-  box    :: Native a -> a
-  eval   :: a -> a
-  eval = box . native
+class Eval a where
+  eval :: Expr a -> Expr a
 
-instance Expr IntExpr where
-  native (Number x)     = x
-  native (Add      x y) = native(x) + native(y)
-  native (Multiply x y) = native(x) * native(y)
-  box x = Number x
+instance Eval Int where
+  eval x = Number $ native x
 
-instance Expr BoolExpr where
-  native (Boolean x)    = x
-  native (LessThan a b) = native(a) < native(b)
-  box x = Boolean x
+instance Eval Bool where
+  eval x = Boolean $ native x

@@ -14,3 +14,6 @@ main = do
   print $ native (LessThan (Number 10)
                            (Add (Number 7)
                                 (Number 2)))
+  print $ eval (LessThan (Number 10)
+                         (Add (Number 7)
+                              (Number 2)))
