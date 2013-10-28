@@ -1,29 +1,26 @@
-{-# LANGUAGE GADTs, FlexibleInstances #-}
 module Simple where
 
-data Expr a where
-  Number   :: Int  -> Expr Int
-  Boolean  :: Bool -> Expr Bool
-  Add      :: Expr Int -> Expr Int -> Expr Int
-  Multiply :: Expr Int -> Expr Int -> Expr Int
-  LessThan :: Expr Int -> Expr Int -> Expr Bool
+data Value = VInt Int | VBool Bool deriving Show
 
-instance Show (Expr Bool) where
-  show (Boolean b) = "Expr[ Boolean " ++ show b ++ " ]"
-instance Show (Expr Int) where
-  show (Number i) = "Expr[ Number " ++ show i ++ " ]"
+data Expr = Number  Int
+          | Boolean Bool
+          | Add      Expr Expr
+          | Multiply Expr Expr
+          | LessThan Expr Expr
 
-native :: Expr a -> a
-native (Number   x  ) = x
-native (Add      x y) = native(x) + native(y)
-native (Multiply x y) = native(x) * native(y)
-native (Boolean  x  ) = x
-native (LessThan x y) = native(x) < native(y)
+eval :: Expr -> Value
+eval (Number   x  ) = VInt  x
+eval (Boolean  x  ) = VBool x
+eval (Add      x y) = (eval x) `plusValue` (eval y)
+eval (Multiply x y) = (eval x) `mulValue`  (eval y)
+eval (LessThan x y) = (eval x) `lessThanValue` (eval y)
 
-class Eval a where
-  box :: a -> Expr a
-  eval :: Expr a -> Expr a
-  eval = box . native
+plusValue :: Value -> Value -> Value
+plusValue (VInt a) (VInt b) = VInt (a + b)
 
-instance Eval Int  where box = Number
-instance Eval Bool where box = Boolean
+mulValue :: Value -> Value -> Value
+mulValue (VInt a) (VInt b) = VInt (a * b)
+
+lessThanValue :: Value -> Value -> Value
+lessThanValue (VInt a) (VInt b) = VBool (a < b)
+lessThanValue x y = error "incompatible type"
