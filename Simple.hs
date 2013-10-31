@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, FlexibleInstances #-}
+{-# LANGUAGE GADTs, FlexibleInstances, StandaloneDeriving #-}
 module Simple where
 
 data Expr a where
@@ -8,10 +8,7 @@ data Expr a where
   Multiply :: Expr Int -> Expr Int -> Expr Int
   LessThan :: Expr Int -> Expr Int -> Expr Bool
 
-instance Show (Expr Bool) where
-  show (Boolean b) = "Expr[ Boolean " ++ show b ++ " ]"
-instance Show (Expr Int) where
-  show (Number i) = "Expr[ Number " ++ show i ++ " ]"
+deriving instance Show a => Show (Expr a)
 
 native :: Expr a -> a
 native (Number   x  ) = x
