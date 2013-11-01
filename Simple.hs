@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, FlexibleInstances, StandaloneDeriving #-}
+{-# LANGUAGE GADTs, StandaloneDeriving #-}
 module Simple where
 
 data Expr a where
