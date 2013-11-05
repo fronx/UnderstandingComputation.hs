@@ -16,11 +16,11 @@ getToId (Transition _ _ (Node b)) = b
 getTrans :: Transition id t -> t
 getTrans (Transition _ x _) = x
 
-matchTransition :: Int -> Char -> Transition Int Char -> Bool
+matchTransition :: (Eq id, Eq x) => id -> x -> Transition id x -> Bool
 matchTransition a x trans =
   (getFromId trans == a) && (getTrans trans == x)
 
-nextState :: Machine Int Char -> Int -> Char -> Maybe Int
+nextState :: (Eq id, Eq t) => Machine id t -> id -> t -> Maybe id
 nextState machine nodeId trans =
   case match of
     Just trans -> Just $ getToId trans
@@ -36,7 +36,19 @@ machine1 =
   , Transition (Node 3) 'b' (Node 3)
   ]
 
+machine2 =
+  [ Transition (Node "one")   "a" (Node "two")
+  , Transition (Node "one")   "b" (Node "one")
+  , Transition (Node "two")   "a" (Node "two")
+  , Transition (Node "two")   "b" (Node "three")
+  , Transition (Node "three") "a" (Node "three")
+  , Transition (Node "three") "b" (Node "three")
+  ]
+
 main = do
   print $ nextState machine1 1 'a'
   print $ nextState machine1 1 'b'
   print $ nextState machine1 2 'b'
+  print $ nextState machine2 "one" "a"
+  print $ nextState machine2 "one" "b"
+  print $ nextState machine2 "two" "b"
