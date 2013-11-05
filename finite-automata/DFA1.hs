@@ -1,23 +1,31 @@
 module DFA1 where
 
 import Data.Maybe
+import Data.List
 
 data Node id = Node id
 data Transition id trans = Transition (Node id) trans (Node id)
 type Machine    id trans = [Transition id trans]
 
+getFromId :: Transition id t -> id
+getFromId (Transition (Node a) _ _) = a
+
+getToId :: Transition id t -> id
+getToId (Transition _ _ (Node b)) = b
+
+getTrans :: Transition id t -> t
+getTrans (Transition _ x _) = x
+
 matchTransition :: Int -> Char -> Transition Int Char -> Bool
-matchTransition _a _x (Transition (Node a) x (Node b)) =
-  (a == _a) && (x == _x)
+matchTransition a x trans =
+  (getFromId trans == a) && (getTrans trans == x)
 
 nextState :: Machine Int Char -> Int -> Char -> Maybe Int
 nextState machine nodeId trans =
   case match of
-    Just (Transition _ _ (Node b)) -> Just b
-    Nothing -> Nothing
-  where match = listToMaybe $
-                take 1 $
-                filter (matchTransition nodeId trans) machine
+    Just trans -> Just $ getToId trans
+    Nothing    -> Nothing
+  where match = find (matchTransition nodeId trans) machine
 
 machine1 =
   [ Transition (Node 1) 'a' (Node 2)
