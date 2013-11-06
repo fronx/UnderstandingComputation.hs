@@ -1,4 +1,7 @@
-module FunctorIntro where
+module FunctorIntro
+( Functor
+, double
+) where
 
 import Prelude hiding ( Functor
                       , fmap
@@ -31,7 +34,6 @@ double x = 2 * x
 
 doublefap :: Functor f => (a -> a) -> f a -> f a
 doublefap f fa = fmap f (fmap f fa)
-
 
 main = do
   print $ fmap double tree1
