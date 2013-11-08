@@ -1,6 +1,9 @@
 module FunctorIntro
 ( Functor
 , double
+, fmap
+, Maybe (..)
+, Tree (..)
 ) where
 
 import Prelude hiding ( Functor
