@@ -47,7 +47,11 @@ fmap2 f t = decompose $ fmap f $ Compose $ t
 fmap3 :: (Functor f, Functor g, Functor h) => (a -> b) -> f (g (h a)) -> f (g (h b))
 fmap3 f t = decompose $ decompose $ fmap f $ Compose $ Compose $ t
 
+fmap3' :: (Functor f, Functor g, Functor h) => (a -> b) -> f (g (h a)) -> f (g (h b))
+fmap3' f x = fmap (fmap (fmap f)) x
+
 main = do
-  print $ fmap  (* 2) $ tree0
-  print $ fmap2 (* 2) $ tree1
-  print $ fmap3 (* 2) $ tree2
+  print $ fmap   (* 2) $ tree0
+  print $ fmap2  (* 2) $ tree1
+  print $ fmap3  (* 2) $ tree2
+  print $ fmap3' (* 2) $ tree2
