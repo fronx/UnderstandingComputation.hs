@@ -21,7 +21,7 @@ instance Functor Tree where
   fmap f (Leaf a) = Leaf (f a)
   fmap f (Branch ta tb) = Branch (fmap f ta) (fmap f tb)
 
-data Compose f g a = Compose (f (g a)) deriving Show
+data Compose f g a = Compose { decompose :: f (g a) } deriving Show
 
 instance (Functor f, Functor g) => Functor (Compose f g) where
   fmap f (Compose x) = Compose (fmap (fmap f) x)
@@ -41,10 +41,11 @@ tree2 = Branch (Branch (Leaf [Just 1, Just 2, Nothing])
                                (Leaf [Just 6, Nothing])))
                (Leaf [Just 8])
 
-uncompose (Compose x) = x
+fmap2 :: (Functor f, Functor g) => (a -> b) -> f (g a) -> f (g b)
+fmap2 f t = decompose $ fmap f $ Compose $ t
 
-fmap2 f t = uncompose $ fmap f $ Compose $ t
-fmap3 f t = uncompose $ uncompose $ fmap f $ Compose $ Compose $ t
+fmap3 :: (Functor f, Functor g, Functor h) => (a -> b) -> f (g (h a)) -> f (g (h b))
+fmap3 f t = decompose $ decompose $ fmap f $ Compose $ Compose $ t
 
 main = do
   print $ fmap  (* 2) $ tree0
