@@ -41,19 +41,12 @@ tree2 = Branch (Branch (Leaf [Just 1, Just 2, Nothing])
                                (Leaf [Just 6, Nothing])))
                (Leaf [Just 8])
 
+uncompose (Compose x) = x
 
---composeN f 0 = \x -> x
---composeN f 1 = f
---composeN f n = f . (composeN f (n - 1))
-
---fmapComp 1 f x = unwrap $ fmap f $ Compose x
---fmapComp 2 f x = (composeN unwrap 2) $ fmap f (composeN Compose 2 $ x)
---fmapComp 3 f x = (composeN unwrap 3) $ fmap f (composeN Compose 3 $ x)
-
-unwrap (Compose x) = x
+fmap2 f t = uncompose $ fmap f $ Compose $ t
+fmap3 f t = uncompose $ uncompose $ fmap f $ Compose $ Compose $ t
 
 main = do
-  print $ fmap (* 2) $ tree0
-  print $ fmap (* 2) $ Compose tree1
-  print $ fmap (* 2) $ Compose tree1
-  print $ unwrap $ unwrap $ fmap (* 2) $ (Compose . Compose) tree2
+  print $ fmap  (* 2) $ tree0
+  print $ fmap2 (* 2) $ tree1
+  print $ fmap3 (* 2) $ tree2
