@@ -21,9 +21,8 @@ instance Functor [] where
   fmap = map
 
 instance Functor Maybe where
-  fmap f ma = case ma of
-    Just x  -> Just (f x)
-    Nothing -> Nothing
+  fmap f (Just x) = Just (f x)
+  fmap f Nothing  = Nothing
 
 instance Functor Tree where
   fmap f (Leaf a) = Leaf (f a)
