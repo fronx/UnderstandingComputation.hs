@@ -2,25 +2,46 @@ module MonadIntro where
 
 import Prelude hiding ( Monad
                       , (>>=), unit
+                      , Functor, fmap
                       , Maybe, Just, Nothing
                       )
 
 import FunctorIntro
 
-class Monad m where
+class Functor m => Monad m where
   unit :: a -> m a
+  join :: m (m a) -> m a
   (>>=) :: m a -> (a -> m b) -> m b
+  ma >>= f = join $ fmap f ma
 
 instance Monad [] where
   unit x = [x]
-  xs >>= f = concat $ map f xs
+  join = concat
+
+instance Monad Maybe where
+  unit = Just
+  join (Just x) = x
+  join Nothing = Nothing
 
 doubleM :: (Monad m, Num a) => a -> m a
 doubleM = unit . double
 
 rfmap fa f = fmap f fa
+rfmap2 fa f = (fmap . fmap) f fa
 
 main = do
+  -- bind
+  putStrLn "-- bind"
   print $ [1,2,3] >>= doubleM >>= doubleM >>= (unit . (* 3))
+  print $ Just 3  >>= doubleM >>= doubleM >>= (unit . (* 3))
+  print $ [[3], [2, 1]] >>=
+             \mi -> mi >>= doubleM >>= (unit . (* 3))
+  --print $ [Just 3, Just 2, Nothing] >>=
+  --           \mi -> mi >>= doubleM >>= (unit . (* 3))
+  -- this doesn't work, because [] is expected inside, not Maybe
+
+  -- fmap
+  putStrLn "-- fmap"
   print $ [1,2,3] `rfmap` double `rfmap` double `rfmap` double
   print $ fmap double $ fmap double [1,2,3]
+  print $ [Just 3, Just 2, Nothing] `rfmap2` double `rfmap2` double
