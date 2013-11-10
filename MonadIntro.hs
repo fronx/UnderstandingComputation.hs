@@ -34,8 +34,17 @@ main = do
   putStrLn "-- bind"
   print $ [1,2,3] >>= doubleM >>= doubleM >>= (unit . (* 3))
   print $ Just 3  >>= doubleM >>= doubleM >>= (unit . (* 3))
+  putStrLn "-- (nested bind)"
   print $ [[3], [2, 1]] >>=
              \mi -> mi >>= doubleM >>= (unit . (* 3))
+  putStrLn "-- (join, then bind)"
+  print $ join [[3], [2, 1]] >>= doubleM >>= (unit . (* 3))
+  putStrLn "-- (nested do notation)"
+  print $ do x <- [[3], [2, 1]]
+             do y <- x
+                z <- doubleM y
+                z' <- (unit . (* 3)) z
+                return z'
   --print $ [Just 3, Just 2, Nothing] >>=
   --           \mi -> mi >>= doubleM >>= (unit . (* 3))
   -- this doesn't work, because [] is expected inside, not Maybe
