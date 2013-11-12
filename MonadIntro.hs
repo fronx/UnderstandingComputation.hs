@@ -12,7 +12,7 @@ class Functor m => Monad m where
   unit :: a -> m a
   join :: m (m a) -> m a
   (>>=) :: m a -> (a -> m b) -> m b
-  ma >>= f = join $ fmap f ma
+  ma >>= f = join (fmap f ma)
 
 instance Monad [] where
   unit x = [x]
@@ -34,11 +34,14 @@ main = do
   putStrLn "-- bind"
   print $ [1,2,3] >>= doubleM >>= doubleM >>= (unit . (* 3))
   print $ Just 3  >>= doubleM >>= doubleM >>= (unit . (* 3))
+
   putStrLn "-- (nested bind)"
   print $ [[3], [2, 1]] >>=
              \mi -> mi >>= doubleM >>= (unit . (* 3))
+
   putStrLn "-- (join, then bind)"
   print $ join [[3], [2, 1]] >>= doubleM >>= (unit . (* 3))
+
   putStrLn "-- (nested do notation)"
   print $ do x <- [[3], [2, 1]]
              do y <- x
